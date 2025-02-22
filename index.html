@@ -37,11 +37,84 @@
     
 </head>
 <body>
-    <h1>Bem-vindo ao Gato Preto - Lanches Delivery!</h1>
+    <h1>
+        Bem-vindo ao Gato Preto - Lanches Delivery!
+        <span id="carrinho-btn" onclick="toggleCarrinho()">🛒<span id="carrinho-contador">0</span></span>
+
+    </h1>
+
+    <!-- Pop-up do Carrinho -->
+<div id="carrinho-popup">
+    <h2>🛍️ Seu Carrinho</h2>
+    <div id="carrinho-itens"></div>
+    <button onclick="askAddress()" class="confirmar-pedido-btn">Confirmar Pedido</button> <!-- Novo botão -->
+    <button onclick="fecharCarrinho()" style="background: gray; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 1em; margin-top: 10px; border-radius: 5px;">Fechar</button>
+</div>
+
+
+    
+
 </body>
+
 </html>
 
     <style>
+
+#fundo-escuro {
+    display: none;
+    background: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 998;
+}
+
+
+.body-bloqueado {
+    overflow: hidden; /* Impede rolagem */
+    pointer-events: none; /* Impede cliques no fundo */
+}
+
+#carrinho-popup {
+    pointer-events: all; /* Mantém o pop-up interativo */
+}
+
+
+#carrinho-btn {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+#carrinho-contador {
+    background: red;
+    color: white;
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 4px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+}
+
+#carrinho-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #444;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    display: none; /* Começa oculto */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
+}
+
+
+
 
 header {
     position: fixed;
@@ -74,8 +147,7 @@ header {
 .tab-buttons {
     position: sticky;
     top: 0;
-    margin: 100px
-    background: #333;
+    margin: 1px;
     padding: 10px;
     z-index: 500;
 }
@@ -923,6 +995,11 @@ header {
 
 
     <script>
+        let carrinho = {}; // Armazena os itens antes da confirmação
+        let carrinhoTemp = {}; // Armazena as modificações antes da confirmação
+        let totalItens = 0;
+
+
         // Função para alternar entre as categorias de menu
     function showMenu(menu) {
         const allMenus = document.querySelectorAll('.menu-items');
@@ -931,6 +1008,12 @@ header {
         const selectedMenu = document.getElementById(menu);
         selectedMenu.classList.add('active');  // Adiciona a classe active ao menu selecionado
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+    console.log("Página carregada!");
+    console.log(carrinho); // Deve exibir um objeto vazio {}
+});
+
 
     // Função para fechar o popup de endereço sem confirmar o pedido
        function closeAddressPopup() {
@@ -1142,23 +1225,36 @@ header {
         }
     }
 
-        function updateQuantity(itemName, action) {
-            const quantityInput = document.getElementById(`${itemName}-quantity`);
-            let currentQuantity = parseInt(quantityInput.value);
-            
-            if (action === 'increase') {
-                quantityInput.value = currentQuantity + 1;
-            } else if (action === 'decrease' && currentQuantity > 0) {
-                quantityInput.value = currentQuantity - 1;
-            }
-        }
+    function updateQuantity(itemName, action) {
+    const quantityInput = document.getElementById(`${itemName}-quantity`);
+    let currentQuantity = parseInt(quantityInput.value);
 
-        function askAddress() {
-            document.getElementById("popup-endereco").style.display = "flex";
+    if (action === 'increase') {
+        quantityInput.value = currentQuantity + 1;
+        carrinho[itemName] = (carrinho[itemName] || 0) + 1; // Atualiza o carrinho
+    } else if (action === 'decrease' && currentQuantity > 0) {
+        quantityInput.value = currentQuantity - 1;
+        carrinho[itemName] = (carrinho[itemName] || 0) - 1;
+        if (carrinho[itemName] <= 0) {
+            delete carrinho[itemName]; // Remove do carrinho se a quantidade for zero
         }
+    }
+
+    atualizarCarrinho(); // Atualiza a interface do carrinho
+}
+
+
+
+
+function askAddress() {
+    fecharCarrinho(); // Fecha o carrinho antes de abrir o endereço
+    document.getElementById("popup-endereco").style.display = "flex";
+}
+
 
         
         function proceedToOrder() {
+
     localStorage.setItem("nome", document.getElementById("nome").value);
     localStorage.setItem("endereco", document.getElementById("endereco").value);
     localStorage.setItem("bairro", document.getElementById("bairro").value);
@@ -1244,9 +1340,88 @@ header {
 
 
 
+// Atualiza o contador do carrinho
+function atualizarCarrinho() {
+    let contador = document.getElementById("carrinho-contador");
+
+    if (!contador) return; // Evita erro se o elemento não existir
+
+    totalItens = Object.values(carrinho || {}).reduce((acc, curr) => acc + curr, 0);
+    contador.innerText = totalItens;
+}
 
 
 
+
+
+
+// Abre/fecha o carrinho
+function toggleCarrinho() {
+    let popup = document.getElementById("carrinho-popup");
+    let fundoEscuro = document.getElementById("fundo-escuro");
+    let body = document.body;
+
+    if (popup.style.display === "none" || popup.style.display === "") {
+        mostrarCarrinho(); // Atualiza os itens antes de exibir
+        popup.style.display = "block";
+        fundoEscuro.style.display = "block"; // Mostra o fundo escuro
+        body.classList.add("body-bloqueado"); // Bloqueia o fundo
+    } else {
+        popup.style.display = "none";
+        fundoEscuro.style.display = "none"; // Esconde o fundo escuro
+        body.classList.remove("body-bloqueado"); // Desbloqueia o fundo
+    }
+}
+
+// Ajuste a função fecharCarrinho para esconder o fundo escuro também
+function fecharCarrinho() {
+    let popup = document.getElementById("carrinho-popup");
+    let fundoEscuro = document.getElementById("fundo-escuro");
+    let body = document.body;
+
+    popup.style.display = "none"; 
+    fundoEscuro.style.display = "none"; // Esconde o fundo escuro
+    body.classList.remove("body-bloqueado"); // Reativa interações e rolagem
+}
+
+
+
+
+
+// Adiciona item ao carrinho
+function adicionarAoCarrinho(nome) {
+    if (!carrinho[nome]) {
+        carrinho[nome] = 1;
+    } else {
+        carrinho[nome]++;
+    }
+
+    totalItens++;
+    atualizarCarrinho();
+
+    console.log("Itens no carrinho:", carrinho); // Verificar se os itens estão sendo adicionados
+}
+
+
+
+function mostrarCarrinho() {
+    let carrinhoItensDiv = document.getElementById("carrinho-itens");
+    carrinhoItensDiv.innerHTML = ""; // Limpa antes de atualizar
+
+    if (Object.keys(carrinho).length === 0) {
+        carrinhoItensDiv.innerHTML = "<p>Seu carrinho está vazio.</p>";
+        return;
+    }
+
+    let orderSummary = "<h3>.</h3>";
+    Object.entries(carrinho).forEach(([item, quantidade]) => {
+        if (quantidade > 0) {
+            orderSummary += `<p>${quantidade}x ${item}</p>`;
+        }
+    });
+
+    carrinhoItensDiv.innerHTML = orderSummary;
+}
 
 
     
@@ -1375,5 +1550,6 @@ console.log(formatOrderLine(2, "X-Frango Bacon Egg", 12.90));
         // Exibe a primeira categoria ao carregar a página
         showMenu('lanches');
     </script>
+    <div id="fundo-escuro"></div>
 </body>
 </html>
