@@ -1002,12 +1002,16 @@ header {
 
         // Função para alternar entre as categorias de menu
     function showMenu(menu) {
-        const allMenus = document.querySelectorAll('.menu-items');
-        allMenus.forEach(menuItem => menuItem.classList.remove('active'));  // Remove a classe active de todos os menus
-        
-        const selectedMenu = document.getElementById(menu);
-        selectedMenu.classList.add('active');  // Adiciona a classe active ao menu selecionado
-    }
+    const allMenus = document.querySelectorAll('.menu-items');
+    allMenus.forEach(menuItem => menuItem.classList.remove('active')); // Remove a classe active de todos os menus
+    
+    const selectedMenu = document.getElementById(menu);
+    selectedMenu.classList.add('active'); // Adiciona a classe active ao menu selecionado
+
+    // Reseta a rolagem do container principal
+    document.querySelector('.menu').scrollTop = 0;
+}
+
 
     document.addEventListener("DOMContentLoaded", function() {
     console.log("Página carregada!");
