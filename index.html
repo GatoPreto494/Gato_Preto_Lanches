@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gato Preto - Lanches Delivery</title>
-    
+        
     <!-- Descrição para SEO -->
     <meta name="description" content="Peça os melhores lanches, porções e bebidas do Gato Preto diretamente do nosso delivery!">
     <meta name="author" content="Gato Preto">
@@ -19,7 +18,7 @@
     <meta property="og:type" content="website" />
 </head>
 <body>
-
+    
     <!-- Conteúdo do seu site -->
 </body>
 </html>
@@ -43,6 +42,50 @@
 </html>
 
     <style>
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #222;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu {
+    max-height: 400px; /* Define uma altura fixa para a área rolável */
+    overflow-y: scroll; /* Ativa a rolagem vertical */
+    scrollbar-width: none; /* Esconde a barra no Firefox */
+    -ms-overflow-style: none; /* Esconde a barra no IE e Edge */
+}
+
+/* Para esconder a barra de rolagem no Chrome, Safari e Edge */
+.menu::-webkit-scrollbar {
+    display: none;
+}
+
+
+.tab-buttons {
+    position: sticky;
+    top: 0;
+    margin: 100px
+    background: #333;
+    padding: 10px;
+    z-index: 500;
+}
+
+.menu {
+    max-height: 400px; /* Defina uma altura fixa para o menu */
+    overflow-y: auto; /* Adiciona rolagem somente para os produtos */
+}
+
+
         
         body {
             font-family: Arial, sans-serif;
@@ -99,7 +142,7 @@
         .tab-buttons {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 0;
         }
         .tab-buttons button {
             background: #444;
@@ -749,10 +792,7 @@
                 <option value="maquina">Máquina</option>
                 <option value="dinheiro">Dinheiro</option>
             </select>
-            <div id="troco-div" style="display: none;">
-                <label for="troco">Quanto em dinheiro?</label>
-                <input type="number" id="troco" placeholder="Valor para troco" value="0">
-            </div>
+            
             <p id="erro-pagamento" style="color: red; display: none;">⚠️ Selecione uma forma de pagamento antes de continuar!</p>
             
             <button onclick="checkPaymentMethod()">Confirmar Endereço e Pagamento</button>
@@ -769,7 +809,7 @@
             
             <!-- Campo para informar valor -->
             <div id="troco-input-div" style="display: none; margin-top: 10px;">
-                <label for="valor-troco">Para quanto você pagará?</label>
+                <label for="valor-troco">Para qual valor precisará?</label>
                 <input type="number" id="valor-troco" placeholder="Ex: 50,00" style="width: 80%; padding: 5px; background-color: #333; color: white; border: 1px solid #555; text-align: center;">
                 <button onclick="confirmTroco()" style="background: orange; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 10px;">Confirmar</button>
             </div>
@@ -784,30 +824,67 @@
 
             <div class="item">
                 <div class="controls">
+                    <button class="btn" onclick="updateAdditional('Hamburguer', 'decrease')">-</button>
+                    <input type="number" id="Hamburguer-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('Hamburguer', 'increase')">+</button>
+                </div>
+                <span>Hambúrguer (+R$ 9,00)</span>
+            </div>
+            
+            <div class="item">
+                <div class="controls">
+                    <button class="btn" onclick="updateAdditional('BatataPalha', 'decrease')">-</button>
+                    <input type="number" id="BatataPalha-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('BatataPalha', 'increase')">+</button>
+                </div>
+                <span>Batata Palha (+R$ 3,00)</span>
+            </div>
+            
+            <div class="item">
+                <div class="controls">
+                    <button class="btn" onclick="updateAdditional('CheddarCatupiry', 'decrease')">-</button>
+                    <input type="number" id="CheddarCatupiry-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('CheddarCatupiry', 'increase')">+</button>
+                </div>
+                <span>Cheddar ou Catupiry (+R$ 7,00)</span>
+            </div>
+            
+            <div class="item">
+                <div class="controls">
+                    <button class="btn" onclick="updateAdditional('Milho', 'decrease')">-</button>
+                    <input type="number" id="Milho-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('Milho', 'increase')">+</button>
+                </div>
+                <span>Milho (+R$ 2,00)</span>
+            </div>
+            
+            <div class="item">
+                <div class="controls">
+                    <button class="btn" onclick="updateAdditional('Salada', 'decrease')">-</button>
+                    <input type="number" id="Salada-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('Salada', 'increase')">+</button>
+                </div>
+                <span>Salada (+R$ 2,00)</span>
+            </div>
+            
+            <div class="item">
+                <div class="controls">
                     <button class="btn" onclick="updateAdditional('Bacon', 'decrease')">-</button>
                     <input type="number" id="Bacon-quantity" value="0" readonly>
                     <button class="btn" onclick="updateAdditional('Bacon', 'increase')">+</button>
                 </div>
-                <span>Bacon (+R$ 3,00)</span>
+                <span>Bacon (+R$ 7,00)</span>
             </div>
-
+            
             <div class="item">
                 <div class="controls">
-                    <button class="btn" onclick="updateAdditional('Queijo', 'decrease')">-</button>
-                    <input type="number" id="Queijo-quantity" value="0" readonly>
-                    <button class="btn" onclick="updateAdditional('Queijo', 'increase')">+</button>
+                    <button class="btn" onclick="updateAdditional('Maionese', 'decrease')">-</button>
+                    <input type="number" id="Maionese-quantity" value="0" readonly>
+                    <button class="btn" onclick="updateAdditional('Maionese', 'increase')">+</button>
                 </div>
-                <span>Queijo (+R$ 2,50)</span>
+                <span>Maionese (+R$ 3,00)</span>
             </div>
-
-            <div class="item">
-                <div class="controls">
-                    <button class="btn" onclick="updateAdditional('Ovo', 'decrease')">-</button>
-                    <input type="number" id="Ovo-quantity" value="0" readonly>
-                    <button class="btn" onclick="updateAdditional('Ovo', 'increase')">+</button>
-                </div>
-                <span>Ovo (+R$ 2,00)</span>
-            </div>
+            
 
             <button onclick="confirmAdditionalSelection()" style="margin-top: 15px; background: orange; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">Confirmar Adicionais</button>
             <button onclick="skipExtras()" style="margin-top: 10px; background: gray; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">Pular</button>
@@ -886,6 +963,16 @@
             proceedToOrder(); // Se não for dinheiro, vai direto para o pedido
         }
     }
+
+    window.addEventListener("scroll", function() {
+    let header = document.querySelector("header");
+    if (window.scrollY > 50) { // Se rolar mais de 50px, some
+        header.classList.add("hidden");
+    } else {
+        header.classList.remove("hidden");
+    }
+});
+
 
 
 
@@ -997,10 +1084,15 @@
 
         // Adicionais
         let extras = [
-            { name: "Bacon", quantity: parseInt(document.getElementById("Bacon-quantity").value), price: 3.00 },
-            { name: "Queijo", quantity: parseInt(document.getElementById("Queijo-quantity").value), price: 2.50 },
-            { name: "Ovo", quantity: parseInt(document.getElementById("Ovo-quantity").value), price: 2.00 }
-        ];
+    { name: "Hamburguer", quantity: parseInt(document.getElementById("Hamburguer-quantity").value), price: 9.00 },
+    { name: "Batata Palha", quantity: parseInt(document.getElementById("BatataPalha-quantity").value), price: 3.00 },
+    { name: "Cheddar ou Catupiry", quantity: parseInt(document.getElementById("CheddarCatupiry-quantity").value), price: 7.00 },
+    { name: "Milho", quantity: parseInt(document.getElementById("Milho-quantity").value), price: 2.00 },
+    { name: "Salada", quantity: parseInt(document.getElementById("Salada-quantity").value), price: 2.00 },
+    { name: "Bacon", quantity: parseInt(document.getElementById("Bacon-quantity").value), price: 7.00 },
+    { name: "Maionese", quantity: parseInt(document.getElementById("Maionese-quantity").value), price: 3.00 }
+];
+
 
         extras.forEach(extra => {
             if (extra.quantity > 0) {
